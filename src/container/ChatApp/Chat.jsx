@@ -6,7 +6,7 @@ import { Box } from '@mui/system';
 import { Button, InputLabel, TextField, Typography } from '@mui/material';
 import Navbar from '../../components/Navbar';
 import { useNavigate } from 'react-router-dom';
-
+import Sidebar from './Sidebar';
 const App = () => {
   const [user, loading, error] = useAuthState(auth);
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ const App = () => {
   return (
     <Box>
       <Navbar />
-
+      <Sidebar />
     </Box>
   )
 }
