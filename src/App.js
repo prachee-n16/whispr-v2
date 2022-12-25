@@ -5,8 +5,7 @@ import { CssBaseline } from '@mui/material';
 import { ColorModeContext, Theme } from './theme'
 import Chat from './container/ChatApp/Chat'
 function App() {
-  
-  const {colorMode, theme} = Theme();
+  const {colorMode, theme, mode} = Theme();
 
   return (
     <ColorModeContext.Provider value={colorMode}>

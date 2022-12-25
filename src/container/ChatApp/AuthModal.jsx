@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import { auth, signInWithGoogle, signInWithEmailAndPassword, registerWithEmailAndPassword } from '../../services/firebase'; import { useAuthState } from "react-firebase-hooks/auth";
+import React, { useState } from 'react'
+import { signInWithGoogle, signInWithEmailAndPassword, registerWithEmailAndPassword } from '../../services/firebase'; 
 import Dialog from '@mui/material/Dialog';
 import { Box } from '@mui/system';
 import { Button, DialogTitle, IconButton, TextField, Typography } from '@mui/material';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import { Navigate, useNavigate } from 'react-router-dom';
 
 const AuthModal = ({ open = false, setOpen }) => {
-    const [user, loading, error] = useAuthState(auth);
     // Login or Sign Up Form
     // Login = True, Sign Up = False
     const [authMode, setAuthMode] = useState(true);

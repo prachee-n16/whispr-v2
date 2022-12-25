@@ -10,6 +10,7 @@ import Sidebar from './Sidebar';
 const App = () => {
   const [user, loading, error] = useAuthState(auth);
   const navigate = useNavigate();
+  const [selectedChannel, setSelectedChannel] = useState([])
 
   useEffect(() => {
     if (!user) {
@@ -19,7 +20,7 @@ const App = () => {
   return (
     <Box>
       <Navbar />
-      <Sidebar />
+      <Sidebar selectedChannel={selectedChannel} setSelectedChannel={setSelectedChannel} />
     </Box>
   )
 }

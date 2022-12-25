@@ -23,21 +23,20 @@ export const Theme = () => {
                     ...(mode === 'light'
                         ? { primary: { main: '#FFFFFF' }, secondary: { main: '#121212' } }
                         : { primary: { main: '#121212' }, secondary: { main: '#FFFFFF' } }
-                    )
-                },
-                typography: {
-                    fontFamily: 'Inter, sans-serif',
-                    h1: {
-                        fontWeight: 600
+                    )},
+                    typography: {
+                        fontFamily: 'Inter, sans-serif',
+                        h1: {
+                            fontWeight: 600
+                        }
                     }
-                }
-            }),
+                }),
         [mode],
     );
 
     //theme = responsiveFontSizes(theme);
 
     return (
-        {colorMode, theme}
+        { colorMode, theme, mode }
     )
 }

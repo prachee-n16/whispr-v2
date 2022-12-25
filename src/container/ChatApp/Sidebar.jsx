@@ -1,26 +1,50 @@
-import * as React from 'react';
+import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
-import CssBaseline from '@mui/material/CssBaseline';
-import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import { Avatar } from '@mui/material';
-import { deepOrange } from '@mui/material/colors';
-import { Stack } from '@mui/system';
-import { logout } from '../../services/firebase';
+import { Avatar, ListItem, ListItemButton, ListItemText } from '@mui/material';
+import { logout, db } from '../../services/firebase';
+import { auth } from '../../services/firebase';
+import { collection, where, query, getDocs } from "firebase/firestore"
 
 const drawerWidth = 250;
 
-export default function PermanentDrawerLeft() {
+export default function Sidebar({selectedChannel, setSelectedChannel}) {
+    const userId = auth.currentUser?.uid || '';
+    const name = auth.currentUser?.displayName;
+    const [channels, setChannels] = useState([])
+
+    async function getUserChannels() {
+        setChannels([])
+        // Create reference for user database
+        const userRef = collection(db, "users");
+        // Create a query against user collection for available groups
+        const userQuery = query(userRef, where("uid", "==", userId));
+        var channelIDs = null;
+        // Execute query
+        const userQuerySnapshot = await getDocs(userQuery);
+        // Only one user will be returned
+        userQuerySnapshot.forEach((doc) => {
+            // doc.data() is never undefined for query doc snapshots
+            channelIDs = doc.data().channels;
+        });
+
+        channelIDs?.map(async (channel) => {
+            const channelQuery = query(collection(db, "channels"), where("id", "==", channel));
+            const channelQuerySnapshot = await getDocs(channelQuery);
+            channelQuerySnapshot.forEach((doc) => {
+                setChannels((prev) => [...prev, { name: doc.data().channel_name, id: doc.data().id }])
+            });
+        })
+    }
+
+    useEffect(() => {
+        getUserChannels();
+    }, [])
+
     function stringToColor(string) {
         let hash = 0;
         let i;
@@ -63,18 +87,25 @@ export default function PermanentDrawerLeft() {
                 variant="permanent"
                 anchor="left"
             >
-                <Toolbar variant="dense" disableGutters="true" sx={{p: 2}}>
+                <Toolbar variant="dense" disableGutters={true} sx={{ px: 2, py: 2 }}>
                     {/* Needs to be config driven */}
-                    <Avatar onClick={logout} variant="rounded" sx={{ width: '16px', height: '16px', }} {...stringAvatar('Prachee Nanda')} />
-                    <Typography variant="h6" sx={{ ml: 1 }}>Prachee Nanda</Typography>
+                    {name && <Avatar onClick={logout} variant="rounded" sx={{ width: '16px', height: '16px', }} {...stringAvatar(name)} />}
+                    <Typography variant="h6" sx={{ ml: 1 }}>{name}</Typography>
                 </Toolbar>
                 <Divider />
                 <List>
-                    {/* ADD GROUPS HERE OR PINNED OR SOMETHING */}
-                </List>
-                <Divider />
-                <List>
-                    {/* ADD NON PINNED */}
+                    {channels && channels?.map((channel) => (
+                        <ListItem onClick={() => setSelectedChannel(channel.id)} key={channel.id} disablePadding>
+                            <ListItemButton
+                                autoFocus={channels[0].id === channel.id}
+                                selected={channel.id === selectedChannel}
+                                disabled={channel.id === selectedChannel}
+                                divider={true}
+                                >
+                                <ListItemText primary={channel.name} />
+                            </ListItemButton>
+                        </ListItem>
+                    ))}
                 </List>
             </Drawer>
             <Box
