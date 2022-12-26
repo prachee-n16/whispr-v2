@@ -10,7 +10,7 @@ import { logout, db } from '../../services/firebase';
 import { auth } from '../../services/firebase';
 import { collection, where, query, getDocs } from "firebase/firestore"
 
-const drawerWidth = 250;
+const drawerWidth = 300;
 
 export default function Sidebar({selectedChannel, setSelectedChannel}) {
     const userId = auth.currentUser?.uid || '';
