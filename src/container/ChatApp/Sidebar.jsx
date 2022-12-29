@@ -5,10 +5,11 @@ import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
-import { Avatar, ListItem, ListItemButton, ListItemText } from '@mui/material';
+import { Avatar, Button, IconButton, ListItem, ListItemButton, ListItemText } from '@mui/material';
 import { logout, db } from '../../services/firebase';
 import { auth } from '../../services/firebase';
 import { collection, where, query, getDocs } from "firebase/firestore"
+import AddRoundedIcon from '@mui/icons-material/AddRounded';
 
 const drawerWidth = 300;
 
@@ -69,6 +70,7 @@ export default function Sidebar({selectedChannel, setSelectedChannel}) {
         return {
             sx: {
                 bgcolor: stringToColor(name),
+                color: '#FFF'
             },
             children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
         };
@@ -92,6 +94,14 @@ export default function Sidebar({selectedChannel, setSelectedChannel}) {
                     {name && <Avatar onClick={logout} variant="rounded" sx={{ width: '16px', height: '16px', }} {...stringAvatar(name)} />}
                     <Typography variant="h6" sx={{ ml: 1 }}>{name}</Typography>
                 </Toolbar>
+                <Box display={'flex'} sx={{justifyContent: 'space-between'}}width={drawerWidth} variant='subtitle2'>
+                    <Typography sx={{mx: 2, mt:2, mb: 1, fontWeight: 700, fontSize: 12}}>
+                        DIRECT MESSAGES
+                    </Typography>
+                    <IconButton sx={{borderRadius: '5px', px: 1, py: 1, m: 1}}>
+                        <AddRoundedIcon fontSize='small'/>
+                    </IconButton>
+                </Box>
                 <Divider />
                 <List>
                     {channels && channels?.map((channel) => (
@@ -113,7 +123,6 @@ export default function Sidebar({selectedChannel, setSelectedChannel}) {
                 sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}
             >
                 <Toolbar />
-
             </Box>
         </Box>
     );
