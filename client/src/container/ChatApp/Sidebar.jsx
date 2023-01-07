@@ -88,6 +88,7 @@ export default function Sidebar({selectedChannel, setSelectedChannel}) {
                             </ListItemButton>
                         </ListItem>
                     ))}
+                    
                 </List>
             </Drawer>
             <Box

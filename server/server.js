@@ -23,15 +23,22 @@ const languageTranslator = new LanguageTranslatorV3({
 app.get('/language', async (req, res) => {
   try {
     const languagesResponse = await languageTranslator.listLanguages()
-      .then(
-        languages => languages
-      )
-      .catch(err => { console.log(err) })
-  
-  res.status(200).send({
-    languages: languagesResponse
-  })
-} catch (err) { console.log(err) }
+    res.status(200).send({
+      languages: languagesResponse
+    })
+  } catch (err) { console.log(err) }
+})
+
+app.post('/translate', async (req, res) => {
+  try {
+    const params = req.body.translateParams
+    const translateResponse = await languageTranslator.translate(params)
+    res.status(200).send({
+      message: translateResponse
+    })
+  } catch (error) {
+    console.log(error)
+  }
 })
 
 app.get('/', async (req, res) => {

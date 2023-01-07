@@ -10,7 +10,7 @@ import Channel from './Channel'
 const App = () => {
   const [user] = useAuthState(auth);
   const navigate = useNavigate();
-  const [selectedChannel, setSelectedChannel] = useState([])
+  const [selectedChannel, setSelectedChannel] = useState(null)
 
   useEffect(() => {
     if (!user) {

@@ -92,21 +92,44 @@ const Channel = ({ selectedChannel }) => {
 
     useEffect(() => { getMessages() }, [selectedChannel])
 
+    const translateMessage = async () => {
+        const translateParams = {
+            text: newMessage,
+            source: 'en',
+            target: translateLanguage.code
+        }
+
+        const data = await fetch('http://localhost:5000/translate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                translateParams: translateParams
+            })
+        })
+
+        return data.json()
+    }
     const handleOnSubmit = async e => {
         e.preventDefault();
         const channelRef = doc(db, "channels", channelId)
         var id = uuidv1();
+        
+        const translatedMessage = await translateMessage()
         await setDoc(channelRef, {
             messages: [...messages, {
                 created_at: new Date(),
-                message: newMessage,
+                ln: translateLanguage ? translateLanguage : 'en',
+                message: translateLanguage ? translatedMessage.message.result.translations[0].translation : newMessage,
                 user: auth.currentUser?.displayName,
                 id,
             }]
         }, { merge: true })
         setMessages((prev) => [...prev, {
             created_at: new Date(),
-            message: newMessage,
+            ln: translateLanguage ? translateLanguage : 'en',
+            message: translateLanguage ? translatedMessage.message.result.translations[0].translation : newMessage,
             user: auth.currentUser?.displayName,
             id
         }])
@@ -282,7 +305,8 @@ const Channel = ({ selectedChannel }) => {
                         bottom: '20px',
                         right: '40px',
                     }}
-                    label={translateLanguage}
+                    disabled={!selectedChannel}
+                    label={translateLanguage && translateLanguage.name}
                     value={newMessage}
                     onChange={handleOnChange}
                     justify="end"
@@ -294,6 +318,7 @@ const Channel = ({ selectedChannel }) => {
                         startAdornment:
                             <>
                                 <IconButton
+                                    disabled={!selectedChannel}
                                     type="button"
                                     disableFocusRipple
                                     color={'secondary'}
@@ -318,7 +343,7 @@ const Channel = ({ selectedChannel }) => {
                                     {languages
                                         ? languages.map((language) =>
                                             language.supported_as_source && language.supported_as_target &&
-                                            <MenuItem onClick={() => setTranslateLanguage(language.language_name)} sx={{display: 'flex',justifyContent: 'space-between' }} key={language.language}>
+                                            <MenuItem onClick={() => setTranslateLanguage({code: language.language, name: language.language_name})} sx={{display: 'flex',justifyContent: 'space-between' }} key={language.language}>
                                                 <>
                                                     {language.language_name}
                                                     <Typography variant="caption" color="gray">
@@ -337,6 +362,7 @@ const Channel = ({ selectedChannel }) => {
                             </>,
                         endAdornment:
                             <IconButton
+                                disabled={!selectedChannel}
                                 type="submit"
                                 disableFocusRipple
                                 color={'secondary'}
