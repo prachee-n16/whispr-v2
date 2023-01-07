@@ -8,7 +8,7 @@ import { v1 as uuidv1 } from 'uuid';
 
 // MUI Imports
 import { ListItemIcon, Menu, MenuItem, Box, Divider, TextField, Typography, IconButton, Avatar, Modal, Button, Select } from '@mui/material'
-import {MoreVertRounded, DeleteRounded, EditRounded, TranslateRounded, SendRounded, ListItem} from '@mui/icons-material';
+import { MoreVertRounded, DeleteRounded, EditRounded, TranslateRounded, SendRounded, ListItem } from '@mui/icons-material';
 
 const Channel = ({ selectedChannel }) => {
     const [messages, setMessages] = useState(null);
@@ -18,16 +18,22 @@ const Channel = ({ selectedChannel }) => {
         collection(db, "channels"),
         where("id", "==", selectedChannel),
     );
+
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [deleteMessageTarget, setDeleteMessageTarget] = useState(null);
     const [openUpdateModal, setOpenUpdateModal] = useState(false);
     const [updateMessageTarget, setUpdateMessageTarget] = useState(null);
-    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [messageAnchorEl, setMessageAnchorEl] = useState(null);
     const [updatedMessage, setUpdatedMessage] = useState(null);
 
+    const [translateMessageAnchorEl, setTranslateMessageAnchorEl] = useState(null)
+    const [translateLanguage, setTranslateLanguage] = useState(null);
+    const [languages, setLanguages] = useState(null)
+
     const handleClick = (index, event) => {
-        setAnchorEl({ [index]: event.currentTarget });
+        setMessageAnchorEl({ [index]: event.currentTarget });
     };
+
     const handleDelete = async () => {
         var index = deleteMessageTarget.index;
         var selected_Message = messages[index].id
@@ -37,7 +43,7 @@ const Channel = ({ selectedChannel }) => {
             messages: new_messages
         }, { merge: true })
         setMessages(new_messages)
-        setAnchorEl(null);
+        setMessageAnchorEl(null);
         setOpenDeleteModal(false)
         setDeleteMessageTarget(null);
     };
@@ -56,15 +62,25 @@ const Channel = ({ selectedChannel }) => {
             messages: new_messages
         }, { merge: true })
         setMessages(new_messages)
-        setAnchorEl(null);
+        setMessageAnchorEl(null);
         setOpenUpdateModal(false)
         setUpdateMessageTarget(null);
         setUpdatedMessage(null);
     };
 
     const handleClose = () => {
-        setAnchorEl(null);
+        setMessageAnchorEl(null);
     };
+
+    const getLanguages = async () => {
+        const data = await fetch('http://localhost:5000/language', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        return data.json()
+    }
 
     const getMessages = async () => {
         const channelQuerySnapshot = await getDocs(channelQuery);
@@ -105,15 +121,27 @@ const Channel = ({ selectedChannel }) => {
     }
 
     const openDeleteModalfn = (index, event) => {
-        setAnchorEl(null)
+        setMessageAnchorEl(null)
         setOpenDeleteModal(true);
         setDeleteMessageTarget({ index, event });
     }
     const openUpdateModalfn = (index, event) => {
-        setAnchorEl(null)
+        setMessageAnchorEl(null)
         setOpenUpdateModal(true);
         setUpdateMessageTarget({ index, event });
     }
+
+    const onLanguageIconClick = (event) => {
+        setTranslateMessageAnchorEl(event.currentTarget)
+    }
+
+    useEffect(() => {
+        (async function () {
+            const languageList = await getLanguages()
+            setLanguages(languageList.languages.result.languages)
+        })()
+    }, [translateMessageAnchorEl])
+
 
     return (
         <Box sx={{ width: '100%', pr: '100px' }}>
@@ -127,6 +155,7 @@ const Channel = ({ selectedChannel }) => {
                 </Typography>
             </Box>
             <Divider sx={{ pt: 2 }} variant={'fullWidth'} />
+            {/* MESSAGES */}
             <Box>
                 {/* MESSAGES */}
                 {messages?.map((message, index) => (
@@ -140,9 +169,9 @@ const Channel = ({ selectedChannel }) => {
                         <Box sx={{ flexGrow: 1 }} />
                         <IconButton key={message.id + "More.."} onClick={(e) => handleClick(index, e)} sx={{ alignSelf: 'center', mx: 1, borderRadius: '5px', height: '32px', width: '32px' }} ><MoreVertRounded /></IconButton>
                         <Menu
-                            anchorEl={anchorEl && anchorEl[index]}
+                            anchorEl={messageAnchorEl && messageAnchorEl[index]}
                             keepMounted
-                            open={Boolean(anchorEl && anchorEl[index])}
+                            open={Boolean(messageAnchorEl && messageAnchorEl[index])}
                             onClose={handleClose}
                             anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
                             transformOrigin={{ vertical: "top", horizontal: "center" }}
@@ -163,12 +192,13 @@ const Channel = ({ selectedChannel }) => {
                     </Box>
                 ))}
             </Box>
+            {/* DELETE MESSAGE MODAL */}
             <Modal
                 open={openDeleteModal}
                 onClose={() => {
                     setOpenDeleteModal(false)
                     setDeleteMessageTarget(null);
-                    setAnchorEl(null)
+                    setMessageAnchorEl(null)
                 }}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
@@ -191,7 +221,7 @@ const Channel = ({ selectedChannel }) => {
                         <Button variant="contained" onClick={() => {
                             setOpenDeleteModal(false)
                             setDeleteMessageTarget(null);
-                            setAnchorEl(null)
+                            setMessageAnchorEl(null)
                         }}
                             sx={{ width: '100px', textTransform: 'capitalize', px: 2, py: 1, mt: 2 }}
                         >
@@ -200,13 +230,14 @@ const Channel = ({ selectedChannel }) => {
                     </Box>
                 </Box>
             </Modal>
+            {/* UPDATE MESSAGE MODAL */}
             <Modal
                 open={openUpdateModal}
                 onClose={() => {
                     setOpenUpdateModal(false)
                     setUpdateMessageTarget(null);
                     setUpdatedMessage(null);
-                    setAnchorEl(null)
+                    setMessageAnchorEl(null)
                 }}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
@@ -232,7 +263,7 @@ const Channel = ({ selectedChannel }) => {
                             setOpenUpdateModal(false)
                             setUpdateMessageTarget(null);
                             setUpdatedMessage(null);
-                            setAnchorEl(null)
+                            setMessageAnchorEl(null)
                         }}
                             sx={{ width: '100px', textTransform: 'capitalize', px: 2, py: 1, mt: 2 }}
                         >
@@ -251,6 +282,7 @@ const Channel = ({ selectedChannel }) => {
                         bottom: '20px',
                         right: '40px',
                     }}
+                    label={translateLanguage}
                     value={newMessage}
                     onChange={handleOnChange}
                     justify="end"
@@ -260,16 +292,49 @@ const Channel = ({ selectedChannel }) => {
                     focused
                     InputProps={{
                         startAdornment:
-                            <IconButton
-                                type="button"
-                                disableFocusRipple
-                                color={'secondary'}
-                                sx={{ borderRadius: '5px' }}
-                                htmlFor="language-select"
-                            >
-                                
-                                <TranslateRounded />
-                            </IconButton>,
+                            <>
+                                <IconButton
+                                    type="button"
+                                    disableFocusRipple
+                                    color={'secondary'}
+                                    sx={{ borderRadius: '5px' }}
+                                    htmlFor="language-select"
+                                    onClick={onLanguageIconClick}
+                                >
+                                    <TranslateRounded />
+                                </IconButton>
+                                <Menu
+                                    anchorEl={translateMessageAnchorEl}
+                                    keepMounted
+                                    open={Boolean(translateMessageAnchorEl)}
+                                    onClose={() => setTranslateMessageAnchorEl(null)}
+                                    onBlur={() => setTranslateMessageAnchorEl(null)}
+                                    sx={{
+                                        width: 350
+                                    }}
+                                    transformOrigin={{ horizontal: 'left', vertical: 'top' }}
+                                    anchorOrigin={{ horizontal: 'left', vertical: 'top' }}
+                                >
+                                    {languages
+                                        ? languages.map((language) =>
+                                            language.supported_as_source && language.supported_as_target &&
+                                            <MenuItem onClick={() => setTranslateLanguage(language.language_name)} sx={{display: 'flex',justifyContent: 'space-between' }} key={language.language}>
+                                                <>
+                                                    {language.language_name}
+                                                    <Typography variant="caption" color="gray">
+                                                        {language.native_language_name}
+                                                    </Typography>
+                                                </>
+                                            </MenuItem>
+                                        )
+                                        :
+                                        <MenuItem onClick={() => setTranslateMessageAnchorEl(null)}>
+                                            Server Error
+                                        </MenuItem>
+                                    }
+
+                                </Menu>
+                            </>,
                         endAdornment:
                             <IconButton
                                 type="submit"
@@ -280,6 +345,7 @@ const Channel = ({ selectedChannel }) => {
                                 <SendRounded />
                             </IconButton>
                     }} />
+                
             </form>
         </Box>
     )
