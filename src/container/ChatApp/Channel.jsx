@@ -1,33 +1,14 @@
-import { Divider, TextField, Typography, IconButton, Avatar, Modal, Button } from '@mui/material'
-import { Box } from '@mui/system'
 import React, { useEffect, useState } from 'react'
-import SendRoundedIcon from '@mui/icons-material/SendRounded';
-import { db } from '../../services/firebase';
+import { stringAvatar, style } from '../../services/utils';
+
+// FIREBASE
+import { db, auth } from '../../services/firebase';
 import { collection, where, query, getDocs, setDoc, doc } from "firebase/firestore"
-import { formatRelative } from 'date-fns';
-import { auth } from '../../services/firebase';
-import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import { v1 as uuidv1 } from 'uuid';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
-import EditRoundedIcon from '@mui/icons-material/EditRounded';
 
-const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 600,
-    bgcolor: 'primary.main',
-    color: 'secondary.main',
-    boxShadow: 24,
-    p: 4,
-    display: "flex",
-    flexDirection: "column"
-};
-
+// MUI Imports
+import { ListItemIcon, Menu, MenuItem, Box, Divider, TextField, Typography, IconButton, Avatar, Modal, Button, Select } from '@mui/material'
+import {MoreVertRounded, DeleteRounded, EditRounded, TranslateRounded, SendRounded, ListItem} from '@mui/icons-material';
 
 const Channel = ({ selectedChannel }) => {
     const [messages, setMessages] = useState(null);
@@ -42,7 +23,7 @@ const Channel = ({ selectedChannel }) => {
     const [openUpdateModal, setOpenUpdateModal] = useState(false);
     const [updateMessageTarget, setUpdateMessageTarget] = useState(null);
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const [updatedMessage, setUpdatedMessage]  = useState(null);
+    const [updatedMessage, setUpdatedMessage] = useState(null);
 
     const handleClick = (index, event) => {
         setAnchorEl({ [index]: event.currentTarget });
@@ -94,48 +75,6 @@ const Channel = ({ selectedChannel }) => {
     }
 
     useEffect(() => { getMessages() }, [selectedChannel])
-
-    // For when we add dates
-    const formatDate = date => {
-        let formattedDate = '';
-        if (date) {
-            // Convert the date in words relative to the current date
-            formattedDate = formatRelative(date, new Date());
-            // Uppercase the first letter
-            formattedDate =
-                formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
-        }
-        return formattedDate;
-    };
-
-    function stringToColor(string) {
-        let hash = 0;
-        let i;
-
-        /* eslint-disable no-bitwise */
-        for (i = 0; i < string.length; i += 1) {
-            hash = string.charCodeAt(i) + ((hash << 5) - hash);
-        }
-
-        let color = '#';
-
-        for (i = 0; i < 3; i += 1) {
-            const value = (hash >> (i * 8)) & 0xff;
-            color += `00${value.toString(16)}`.slice(-2);
-        }
-        /* eslint-enable no-bitwise */
-
-        return color;
-    }
-
-    function stringAvatar(name) {
-        return {
-            sx: {
-                bgcolor: stringToColor(name),
-            },
-            children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
-        };
-    }
 
     const handleOnSubmit = async e => {
         e.preventDefault();
@@ -199,7 +138,7 @@ const Channel = ({ selectedChannel }) => {
                             </Typography>
                         </Box>
                         <Box sx={{ flexGrow: 1 }} />
-                        <IconButton key={message.id + "More.."} onClick={(e) => handleClick(index, e)} sx={{ alignSelf: 'center', mx: 1, borderRadius: '5px', height: '32px', width: '32px' }} ><MoreVertRoundedIcon /></IconButton>
+                        <IconButton key={message.id + "More.."} onClick={(e) => handleClick(index, e)} sx={{ alignSelf: 'center', mx: 1, borderRadius: '5px', height: '32px', width: '32px' }} ><MoreVertRounded /></IconButton>
                         <Menu
                             anchorEl={anchorEl && anchorEl[index]}
                             keepMounted
@@ -210,13 +149,13 @@ const Channel = ({ selectedChannel }) => {
                         >
                             <MenuItem onClick={(e) => openDeleteModalfn(index, e)}>
                                 <ListItemIcon>
-                                    <DeleteRoundedIcon />
+                                    <DeleteRounded />
                                 </ListItemIcon>
                                 Delete
                             </MenuItem>
                             <MenuItem onClick={(e) => openUpdateModalfn(index, e)}>
                                 <ListItemIcon>
-                                    <EditRoundedIcon />
+                                    <EditRounded />
                                 </ListItemIcon>
                                 Update
                             </MenuItem>
@@ -253,8 +192,8 @@ const Channel = ({ selectedChannel }) => {
                             setOpenDeleteModal(false)
                             setDeleteMessageTarget(null);
                             setAnchorEl(null)
-                            }} 
-                            sx={{ width: '100px', textTransform: 'capitalize', px: 2, py: 1, mt: 2 }} 
+                        }}
+                            sx={{ width: '100px', textTransform: 'capitalize', px: 2, py: 1, mt: 2 }}
                         >
                             CANCEL
                         </Button>
@@ -276,17 +215,17 @@ const Channel = ({ selectedChannel }) => {
                     <Typography id="modal-modal-title" variant="h6" component="h2">
                         Edit message
                     </Typography>
-                    <TextField 
-                        onChange={handleUpdateChange} 
-                        value={updatedMessage} 
-                        variant="outlined" 
-                        color="secondary" 
+                    <TextField
+                        onChange={handleUpdateChange}
+                        value={updatedMessage}
+                        variant="outlined"
+                        color="secondary"
                         placeholder={updateMessageTarget && messages[updateMessageTarget.index].message}
                         focused
-                        sx={{my: 2}}
+                        sx={{ my: 2 }}
                     />
                     <Box sx={{ flexDirection: "row" }}>
-                        <Button  onClick={() => {handleUpdate()}} variant="contained" color="error" sx={{ width: '100px', textTransform: 'capitalize', px: 2, py: 1, mt: 2, mr: 2 }} >
+                        <Button onClick={() => { handleUpdate() }} variant="contained" color="error" sx={{ width: '100px', textTransform: 'capitalize', px: 2, py: 1, mt: 2, mr: 2 }} >
                             UPDATE
                         </Button>
                         <Button variant="contained" onClick={() => {
@@ -294,8 +233,8 @@ const Channel = ({ selectedChannel }) => {
                             setUpdateMessageTarget(null);
                             setUpdatedMessage(null);
                             setAnchorEl(null)
-                            }} 
-                            sx={{ width: '100px', textTransform: 'capitalize', px: 2, py: 1, mt: 2 }} 
+                        }}
+                            sx={{ width: '100px', textTransform: 'capitalize', px: 2, py: 1, mt: 2 }}
                         >
                             CANCEL
                         </Button>
@@ -320,6 +259,17 @@ const Channel = ({ selectedChannel }) => {
                     color="secondary"
                     focused
                     InputProps={{
+                        startAdornment:
+                            <IconButton
+                                type="button"
+                                disableFocusRipple
+                                color={'secondary'}
+                                sx={{ borderRadius: '5px' }}
+                                htmlFor="language-select"
+                            >
+                                
+                                <TranslateRounded />
+                            </IconButton>,
                         endAdornment:
                             <IconButton
                                 type="submit"
@@ -327,7 +277,7 @@ const Channel = ({ selectedChannel }) => {
                                 color={'secondary'}
                                 sx={{ borderRadius: '5px' }}
                             >
-                                <SendRoundedIcon />
+                                <SendRounded />
                             </IconButton>
                     }} />
             </form>

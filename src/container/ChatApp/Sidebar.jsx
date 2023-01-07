@@ -5,11 +5,12 @@ import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
-import { Avatar, Button, IconButton, ListItem, ListItemButton, ListItemText } from '@mui/material';
+import { Avatar, IconButton, ListItem, ListItemButton, ListItemText } from '@mui/material';
 import { logout, db } from '../../services/firebase';
 import { auth } from '../../services/firebase';
 import { collection, where, query, getDocs } from "firebase/firestore"
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
+import { stringAvatar } from '../../services/utils';
 
 const drawerWidth = 300;
 
@@ -46,35 +47,6 @@ export default function Sidebar({selectedChannel, setSelectedChannel}) {
         getUserChannels();
     }, [])
 
-    function stringToColor(string) {
-        let hash = 0;
-        let i;
-
-        /* eslint-disable no-bitwise */
-        for (i = 0; i < string.length; i += 1) {
-            hash = string.charCodeAt(i) + ((hash << 5) - hash);
-        }
-
-        let color = '#';
-
-        for (i = 0; i < 3; i += 1) {
-            const value = (hash >> (i * 8)) & 0xff;
-            color += `00${value.toString(16)}`.slice(-2);
-        }
-        /* eslint-enable no-bitwise */
-
-        return color;
-    }
-
-    function stringAvatar(name) {
-        return {
-            sx: {
-                bgcolor: stringToColor(name),
-                color: '#FFF'
-            },
-            children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
-        };
-    }
     return (
         <Box sx={{ display: 'flex' }}>
             <Drawer

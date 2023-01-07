@@ -10,7 +10,7 @@ import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
 import AuthModal from './ChatApp/AuthModal';
 const Landing = () => {
     const navigate = useNavigate();
-    const [user, loading, error] = useAuthState(auth);
+    const [user] = useAuthState(auth);
     const [open, setOpen] = useState(false);
 
     useEffect(() => {

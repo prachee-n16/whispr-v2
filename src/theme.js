@@ -1,5 +1,5 @@
 import { createContext, useMemo, useState } from "react";
-import { createTheme, responsiveFontSizes } from '@mui/material';
+import { createTheme } from '@mui/material';
 
 export const ColorModeContext = createContext({ toggleColorMode: () => { } });
 
