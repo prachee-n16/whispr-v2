@@ -5,7 +5,7 @@ import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
-import { Avatar, TextField, IconButton, ListItem, ListItemButton, ListItemText } from '@mui/material';
+import { Avatar, ListItemIcon, TextField, IconButton, ListItem, ListItemButton, ListItemText } from '@mui/material';
 import { logout, db } from '../../services/firebase';
 import { auth } from '../../services/firebase';
 import { collection, where, query, getDocs,addDoc, setDoc, doc } from "firebase/firestore"
@@ -13,6 +13,7 @@ import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import { stringAvatar } from '../../services/utils';
 import { v1 as uuidv1 } from 'uuid';
 import { useAuthState } from "react-firebase-hooks/auth";
+import { MoreVertRounded, DeleteRounded, EditRounded, TranslateRounded, SendRounded } from '@mui/icons-material';
 
 const drawerWidth = 300;
 
@@ -26,7 +27,6 @@ export default function Sidebar({ selectedChannel, setSelectedChannel }) {
     const [channelName, setChannelName] = useState('')
 
     async function getUserChannels() {
-        console.log('run fn')
         setChannels([])
         // Create reference for user database
         const userRef = collection(db, "users");

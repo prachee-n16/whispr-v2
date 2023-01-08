@@ -20,7 +20,7 @@ const App = () => {
 
   return (
     <Box>
-      <Navbar />
+      <Navbar selectedChannel={selectedChannel} />
       <Box sx={{display: 'flex', direction: 'row'}} >
         <Sidebar selectedChannel={selectedChannel} setSelectedChannel={setSelectedChannel} />
         <Channel selectedChannel={selectedChannel} />
