@@ -23,8 +23,6 @@ const languageTranslator = new LanguageTranslatorV3({
 app.get('/language', async (req, res) => {
   try {
     const languagesResponse = await languageTranslator.listLanguages()
-    res.setHeader('Content-Type', 'text/html');
-    res.setHeader('Cache-Control', 's-max-age=1, stale-while-revalidate');
     res.status(200).send({
       languages: languagesResponse
     })
@@ -35,8 +33,6 @@ app.post('/translate', async (req, res) => {
   try {
     const params = req.body.translateParams
     const translateResponse = await languageTranslator.translate(params)
-    res.setHeader('Content-Type', 'text/html');
-    res.setHeader('Cache-Control', 's-max-age=1, stale-while-revalidate');
     res.status(200).send({
       message: translateResponse
     })
@@ -47,8 +43,6 @@ app.post('/translate', async (req, res) => {
 
 app.get('/', async (req, res) => {
   try {
-    res.setHeader('Content-Type', 'text/html');
-    res.setHeader('Cache-Control', 's-max-age=1, stale-while-revalidate');
     res.status(200).send({
       message: 'Hello from Whispr!'
     })
