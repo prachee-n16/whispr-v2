@@ -51,4 +51,4 @@ app.get('/', async (req, res) => {
   }
 })
 
-module.exports = app;
+export default app;
