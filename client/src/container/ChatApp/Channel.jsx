@@ -73,7 +73,7 @@ const Channel = ({ selectedChannel }) => {
     };
 
     const getLanguages = async () => {
-        const data = await fetch('http://localhost:5000/language', {
+        const data = await fetch('https://whispr-server.vercel.app/language', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -99,7 +99,7 @@ const Channel = ({ selectedChannel }) => {
             target: translateLanguage.code
         }
 
-        const data = await fetch('http://localhost:5000/translate', {
+        const data = await fetch('https://whispr-server.vercel.app/translate', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
