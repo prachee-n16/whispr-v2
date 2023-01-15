@@ -6,6 +6,7 @@
             "use": "@vercel/node"
         }
     ],
+    "buildCommand": "nodemon --experimental-specifier-resolution=node server",
     "routes": [
         {
             "src": "/(.*)",
