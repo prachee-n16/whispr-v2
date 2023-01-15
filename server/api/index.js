@@ -20,7 +20,7 @@ const languageTranslator = new LanguageTranslatorV3({
 });
 
 // Get all languages
-app.get('/api/language', async (req, res) => {
+app.get('/api', async (req, res) => {
   try {
     const languagesResponse = await languageTranslator.listLanguages()
     res.status(200).send({
@@ -29,22 +29,12 @@ app.get('/api/language', async (req, res) => {
   } catch (err) { console.log(err) }
 })
 
-app.post('/api/translate', async (req, res) => {
+app.post('/api', async (req, res) => {
   try {
     const params = req.body.translateParams
     const translateResponse = await languageTranslator.translate(params)
     res.status(200).send({
       message: translateResponse
-    })
-  } catch (error) {
-    console.log(error)
-  }
-})
-
-app.get('/api', async (req, res) => {
-  try {
-    res.status(200).send({
-      message: 'Hello from Whispr!'
     })
   } catch (error) {
     console.log(error)
