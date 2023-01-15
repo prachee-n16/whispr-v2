@@ -1,8 +1,8 @@
 import express from 'express'
 import * as dotenv from 'dotenv'
 import cors from 'cors'
-import { IamAuthenticator } from 'ibm-watson/auth';
-import LanguageTranslatorV3 from 'ibm-watson/language-translator/v3'
+import { IamAuthenticator } from 'ibm-watson/auth/index.js';
+import LanguageTranslatorV3 from 'ibm-watson/language-translator/v3.js'
 
 dotenv.config()
 
@@ -20,7 +20,7 @@ const languageTranslator = new LanguageTranslatorV3({
 });
 
 // Get all languages
-app.get('/language', async (req, res) => {
+app.get('/api/language', async (req, res) => {
   try {
     const languagesResponse = await languageTranslator.listLanguages()
     res.status(200).send({
@@ -29,7 +29,7 @@ app.get('/language', async (req, res) => {
   } catch (err) { console.log(err) }
 })
 
-app.post('/translate', async (req, res) => {
+app.post('/api/translate', async (req, res) => {
   try {
     const params = req.body.translateParams
     const translateResponse = await languageTranslator.translate(params)
@@ -41,7 +41,7 @@ app.post('/translate', async (req, res) => {
   }
 })
 
-app.get('/', async (req, res) => {
+app.get('/api', async (req, res) => {
   try {
     res.status(200).send({
       message: 'Hello from Whispr!'
