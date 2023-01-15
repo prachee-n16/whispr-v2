@@ -2,11 +2,10 @@
     "version": 2,
     "builds": [
         {
-            "src": "server.js",
-            "use": "@now/node"
+            "src": "./index.js",
+            "use": "@vercel/node"
         }
     ],
-    "buildCommand": "nodemon --experimental-specifier-resolution=node server",
     "routes": [
         {
             "src": "/(.*)",
