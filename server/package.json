@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "server": "nodemon --experimental-specifier-resolution=node server"
+    "server": "nodemon --experimental-specifier-resolution=node server",
+    "dev": "vercel dev"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +19,7 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "ibm-watson": "^7.1.2",
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.20",
+    "vercel": "^28.12.4"
   }
 }
